@@ -73,6 +73,39 @@ namespace Durak_Card_Game
             {
 
             }
+            while (ShuffledDeck.Count != 0)
+            {
+                //place for gameplay
+            }
+            if (Player.Count == 0)
+            {
+                Console.WriteLine("You won!");
+            }
+            else
+            {
+                Console.WriteLine("You lost the game. Replay? (Y/N)");
+                string answer = Console.ReadLine();
+                answer.ToLower();
+                while (true)
+                    switch (answer)
+                    {
+                        case "y":
+                            {
+                                Play();
+                                break;
+                            }
+                        case "n":
+                            {
+                                Console.WriteLine("Bye!");
+                                break;
+                            }
+                        default:
+                            {
+                                Console.WriteLine("Press Y or N");
+                                break;
+                            }
+                    }
+            }
         }
 
 
