@@ -66,9 +66,10 @@ namespace Durak_Card_Game
         {
             Console.WriteLine("Let's start the game. Checking for the lowest trump or value in hands...");
             Thread.Sleep(1500);
+            Card trump = ShuffledDeck[ShuffledDeck.Count - 1];
             List<Card> playerHand = Player;
             List<Card> aiHand = AIplayer;
-            if (playerHand.Contains())
+            if (playerHand.Any(f => f.Face == 0)) && playerHand.Any(s => s.Suit == trump.Suit))
             {
 
             }
