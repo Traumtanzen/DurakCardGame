@@ -30,17 +30,17 @@ namespace Durak_Card_Game
             }
 
             //(un)comment to (see)hide deck display
-            Console.WriteLine("\nGot deck is:\n");
-            foreach (Card card in GameDeck)
-            {
-                Console.WriteLine($"{GameDeck.IndexOf(card)} - {card.ShowCard()}");
-            }
+            //Console.WriteLine("\nGot deck is:\n");
+            //foreach (Card card in GameDeck)
+            //{
+            //    Console.WriteLine($"{GameDeck.IndexOf(card)} - {card.ShowCard()}");
+            //}
         }
 
         public void Shuffle()
         {
             ShuffledDeck = GameDeck.OrderBy(c => Guid.NewGuid()).ToList();
-            ShowShuffledDeck(); //(un)comment to (see)hide shuffled deck display
+            //ShowShuffledDeck(); //(un)comment to (see)hide shuffled deck display
         }
         public void DealHands()
         {
@@ -75,16 +75,25 @@ namespace Durak_Card_Game
                     Console.WriteLine("\nAI starts");
                     AIturn();
                     PlayerTurn();
-                    if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                        (aiBid.Face < playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                        (aiBid.Face > playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                    while (ShuffledDeck.Count != 0)
                     {
-                        Swap.Clear();
-                    }
-                    else
-                    {
-                        Player.AddRange(Swap);
-                        Swap.Clear();
+                        if (((aiBid.Face > playerBid.Face) && (aiBid.Suit == playerBid.Suit)) ||
+                        ((aiBid.Face < playerBid.Face) && (aiBid.Suit == playerBid.Suit)) ||
+                        ((aiBid.Face > playerBid.Face) && (aiBid.Suit != trump.Suit) && (playerBid.Suit == trump.Suit)))
+                        {
+                            Swap.Clear();
+                            DealHands();
+                            PlayerTurn();
+                        }
+                        else
+                        {
+                            Player.AddRange(Swap);
+                            Swap.Clear();
+                            Console.WriteLine("You take the card");
+                            Thread.Sleep(500);
+                            DealHands();
+                            AIturn();
+                        }
                     }
                 }
                 else
@@ -95,17 +104,24 @@ namespace Durak_Card_Game
                         Console.WriteLine("\nYou start");
                         PlayerTurn();
                         AIdefence();
-                        if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                            (aiBid.Face < playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                        while (ShuffledDeck.Count != 0)
                         {
-                            Swap.Clear();
-                            AIturn();
-                        }
-                        else
-                        {
-                            AIplayer.AddRange(Swap);
-                            Swap.Clear();
-                            PlayerTurn();
+                            if (((aiBid.Face > playerBid.Face) && (aiBid.Suit == playerBid.Suit)) ||
+                            ((aiBid.Face < playerBid.Face) && (aiBid.Suit != trump.Suit) && (playerBid.Suit == trump.Suit)))
+                            {
+                                Swap.Clear();
+                                DealHands();
+                                AIturn();
+                            }
+                            else
+                            {
+                                AIplayer.AddRange(Swap);
+                                Swap.Clear();
+                                Console.WriteLine("AI takes the card");
+                                Thread.Sleep(500);
+                                DealHands();
+                                PlayerTurn();
+                            }
                         }
                     }
                     else
@@ -115,17 +131,24 @@ namespace Durak_Card_Game
                             //player turn
                             PlayerTurn();
                             AIdefence();
-                            if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                                (aiBid.Face < playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                            while (ShuffledDeck.Count != 0)
                             {
-                                Swap.Clear();
-                                AIturn();
-                            }
-                            else
-                            {
-                                AIplayer.AddRange(Swap);
-                                Swap.Clear();
-                                PlayerTurn();
+                                if (((aiBid.Face > playerBid.Face) && (aiBid.Suit == playerBid.Suit)) ||
+                                ((aiBid.Face < playerBid.Face) && (aiBid.Suit != trump.Suit) && (playerBid.Suit == trump.Suit)))
+                                {
+                                    Swap.Clear();
+                                    DealHands();
+                                    AIturn();
+                                }
+                                else
+                                {
+                                    AIplayer.AddRange(Swap);
+                                    Swap.Clear();
+                                    Console.WriteLine("AI takes the card");
+                                    Thread.Sleep(500);
+                                    DealHands();
+                                    PlayerTurn();
+                                }
                             }
                         }
                         else
@@ -133,18 +156,25 @@ namespace Durak_Card_Game
                             //comp turn
                             AIturn();
                             PlayerTurn();
-                            if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                                (aiBid.Face < playerBid.Face && aiBid.Suit == playerBid.Suit) ||
-                                (aiBid.Face > playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                            while (ShuffledDeck.Count != 0)
                             {
-                                Swap.Clear();
-                                PlayerTurn();
-                            }
-                            else
-                            {
-                                Player.AddRange(Swap);
-                                Swap.Clear();
-                                AIturn();
+                                if ((aiBid.Face > playerBid.Face) && (aiBid.Suit == playerBid.Suit) ||
+                                ((aiBid.Face < playerBid.Face) && (aiBid.Suit == playerBid.Suit)) ||
+                                ((aiBid.Face > playerBid.Face) && (aiBid.Suit != trump.Suit) && (playerBid.Suit == trump.Suit)))
+                                {
+                                    Swap.Clear();
+                                    DealHands();
+                                    PlayerTurn();
+                                }
+                                else
+                                {
+                                    Player.AddRange(Swap);
+                                    Swap.Clear();
+                                    Console.WriteLine("You take the card");
+                                    Thread.Sleep(500);
+                                    DealHands();
+                                    AIturn();
+                                }
                             }
                         }
                     }
@@ -199,11 +229,13 @@ namespace Durak_Card_Game
         }
         public void PlayerTurn()
         {
-            Console.WriteLine("\nBid a card. Choose by index and press <Enter>");
+            Console.WriteLine($"\nBid a card. Choose by index and press <Enter> ({trump.Suit} are trumps)");
             ShowPlayerHand();
             int.TryParse(Console.ReadLine(), out int PlChoice);
             playerBid = Player.ElementAt(PlChoice);
+            Swap.Add(playerBid);
             Console.WriteLine($"\nYour card is {playerBid.ShowCard()}");
+            Player.RemoveAt(PlChoice);
         }
 
 

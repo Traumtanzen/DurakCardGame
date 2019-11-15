@@ -15,10 +15,10 @@ namespace Durak_Card_Game
             game.GetGameDeck(); // comment the marked code in method before build
             game.Shuffle(); // comment the marked code in method before build
             game.DealHands();
-            game.ShowPlayerHand(); // comment the line before build 
-            game.ShowAIplayerHand(); // comment the line before build 
+            //game.ShowPlayerHand(); // comment the line before build 
+            //game.ShowAIplayerHand(); // comment the line before build 
             game.ShowTrump();
-            game.ShowShuffledDeck(); //comment the line before build
+            //game.ShowShuffledDeck(); //comment the line before build
             game.Play();
 
             Console.ReadLine();
