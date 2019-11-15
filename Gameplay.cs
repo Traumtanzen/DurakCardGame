@@ -14,6 +14,9 @@ namespace Durak_Card_Game
         public List<Card> Player = new List<Card>();
         public List<Card> AIplayer = new List<Card>();
         public List<Card> Swap = new List<Card>();
+        public Card trump = new Card();
+        public Card aiBid = new Card();
+        public Card playerBid = new Card();
 
         public void GetGameDeck()
         {
@@ -30,7 +33,7 @@ namespace Durak_Card_Game
             Console.WriteLine("\nGot deck is:\n");
             foreach (Card card in GameDeck)
             {
-                Console.WriteLine(card.ShowCard());
+                Console.WriteLine($"{GameDeck.IndexOf(card)} - {card.ShowCard()}");
             }
         }
 
@@ -49,33 +52,103 @@ namespace Durak_Card_Game
                 ShuffledDeck.RemoveAt(0);
             }
         }
-        public void GetTrump()
+        public void ShowTrump()
         {
             Swap.Add(ShuffledDeck[0]);
             ShuffledDeck.RemoveAt(0);
             ShuffledDeck.AddRange(Swap);
             Swap.Clear();
-            ShowTrump();
-        }
-        public void ShowTrump()
-        {
-            Card trump = ShuffledDeck[ShuffledDeck.Count - 1];
+            trump = ShuffledDeck[ShuffledDeck.Count - 1];
             Console.WriteLine($"\n{trump.Suit} are trumps for this game.");
         }
         public void Play()
         {
-            Console.WriteLine("Let's start the game. Checking for the lowest trump or value in hands...");
-            Thread.Sleep(1500);
-            Card trump = ShuffledDeck[ShuffledDeck.Count - 1];
-            List<Card> playerHand = Player;
-            List<Card> aiHand = AIplayer;
-            if (playerHand.Any(f => f.Face == 0)) && playerHand.Any(s => s.Suit == trump.Suit))
-            {
-
-            }
             while (ShuffledDeck.Count != 0)
             {
-                //place for gameplay
+                Console.WriteLine("\nLet's start the game. Checking for the lowest trump or value in hands...");
+                Thread.Sleep(1500);
+                var playerTrump = Player.OrderBy(o => o.Face).FirstOrDefault(s => s.Suit == trump.Suit);
+                var aiTrump = AIplayer.OrderBy(o => o.Face).FirstOrDefault(s => s.Suit == trump.Suit);
+                if (playerTrump == null)
+                {
+                    //comp first
+                    Console.WriteLine("\nAI starts");
+                    AIturn();
+                    PlayerTurn();
+                    if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                        (aiBid.Face < playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                        (aiBid.Face > playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                    {
+                        Swap.Clear();
+                    }
+                    else
+                    {
+                        Player.AddRange(Swap);
+                        Swap.Clear();
+                    }
+                }
+                else
+                {
+                    if (aiTrump == null)
+                    {
+                        //player first
+                        Console.WriteLine("\nYou start");
+                        PlayerTurn();
+                        AIdefence();
+                        if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                            (aiBid.Face < playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                        {
+                            Swap.Clear();
+                            AIturn();
+                        }
+                        else
+                        {
+                            AIplayer.AddRange(Swap);
+                            Swap.Clear();
+                            PlayerTurn();
+                        }
+                    }
+                    else
+                    {
+                        if (playerTrump.Face < aiTrump.Face)
+                        {
+                            //player turn
+                            PlayerTurn();
+                            AIdefence();
+                            if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                                (aiBid.Face < playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                            {
+                                Swap.Clear();
+                                AIturn();
+                            }
+                            else
+                            {
+                                AIplayer.AddRange(Swap);
+                                Swap.Clear();
+                                PlayerTurn();
+                            }
+                        }
+                        else
+                        {
+                            //comp turn
+                            AIturn();
+                            PlayerTurn();
+                            if ((aiBid.Face > playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                                (aiBid.Face < playerBid.Face && aiBid.Suit == playerBid.Suit) ||
+                                (aiBid.Face > playerBid.Face && aiBid.Suit != trump.Suit && playerBid.Suit == trump.Suit))
+                            {
+                                Swap.Clear();
+                                PlayerTurn();
+                            }
+                            else
+                            {
+                                Player.AddRange(Swap);
+                                Swap.Clear();
+                                AIturn();
+                            }
+                        }
+                    }
+                }
             }
             if (Player.Count == 0)
             {
@@ -107,8 +180,31 @@ namespace Durak_Card_Game
                     }
             }
         }
-
-
+        public void AIturn()
+        {
+            Thread.Sleep(500);
+            AIplayer.OrderBy(f => f.Face);
+            aiBid = AIplayer.ElementAt(0);
+            Swap.Add(AIplayer[0]);
+            AIplayer.RemoveAt(0);
+            Console.WriteLine($"\nAI bids a card: {aiBid.ShowCard()}");
+        }
+        public void AIdefence()
+        {
+            Thread.Sleep(500);
+            aiBid = AIplayer.First(c => (c.Face > playerBid.Face && c.Suit == playerBid.Suit) ||
+                                        (c.Face < playerBid.Face && c.Suit == trump.Suit) ||
+                                        (c.Face < playerBid.Face && c.Suit != trump.Suit));
+            Console.WriteLine($"\nAI bids a card: {aiBid.ShowCard()}");
+        }
+        public void PlayerTurn()
+        {
+            Console.WriteLine("\nBid a card. Choose by index and press <Enter>");
+            ShowPlayerHand();
+            int.TryParse(Console.ReadLine(), out int PlChoice);
+            playerBid = Player.ElementAt(PlChoice);
+            Console.WriteLine($"\nYour card is {playerBid.ShowCard()}");
+        }
 
 
         //(un)comment to (see)hide display of hands and(or) deck. don't forget to insert/remove the methods' calls!
@@ -117,7 +213,7 @@ namespace Durak_Card_Game
             Console.WriteLine("\nYour hand is:\n");
             foreach (Card pCards in Player)
             {
-                Console.WriteLine(pCards.ShowCard());
+                Console.WriteLine($"{Player.IndexOf(pCards)} - {pCards.ShowCard()}");
             }
         }
         public void ShowAIplayerHand()
@@ -125,7 +221,7 @@ namespace Durak_Card_Game
             Console.WriteLine("\nAI's hand is:\n");
             foreach (Card aiCards in AIplayer)
             {
-                Console.WriteLine(aiCards.ShowCard());
+                Console.WriteLine($"{AIplayer.IndexOf(aiCards)} - {aiCards.ShowCard()}");
             }
         }
         public void ShowShuffledDeck()
@@ -133,7 +229,7 @@ namespace Durak_Card_Game
             Console.WriteLine("\nShuffled deck is:\n");
             foreach (Card card in ShuffledDeck)
             {
-                Console.WriteLine(card.ShowCard());
+                Console.WriteLine($"{ShuffledDeck.IndexOf(card)} -  {card.ShowCard()}");
             }
         }
     }

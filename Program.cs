@@ -17,8 +17,9 @@ namespace Durak_Card_Game
             game.DealHands();
             game.ShowPlayerHand(); // comment the line before build 
             game.ShowAIplayerHand(); // comment the line before build 
-            game.GetTrump();
+            game.ShowTrump();
             game.ShowShuffledDeck(); //comment the line before build
+            game.Play();
 
             Console.ReadLine();
 
