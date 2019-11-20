@@ -237,30 +237,54 @@ namespace Durak_Card_Game
         }
         public bool AIFaceLower()
         {
-            bool f = aiBid.Face < playerBid.Face;
+            bool f = (aiBid.Face < playerBid.Face);
             return f;
         }
         public bool PlayerFaceLower()
         {
-            bool f = aiBid.Face > playerBid.Face;
+            bool f = (aiBid.Face > playerBid.Face);
             return f;
         }
         public bool EqualFaces()
         {
-            bool f = aiBid.Face == playerBid.Face;
+            bool f = (aiBid.Face == playerBid.Face);
             return f;
         }
         public bool SameSuit()
         {
-            bool f = aiBid.Suit == playerBid.Suit;
-            return f;
+            bool s = (aiBid.Suit == playerBid.Suit);
+            return s;
         }
         public bool DiffSuits()
         {
-            bool f = aiBid.Suit != playerBid.Suit;
-            return f;
+            bool s = (aiBid.Suit != playerBid.Suit);
+            return s;
         }
-
+        public bool AIbidIsTrump()
+        {
+            bool s = (aiBid.Suit == trump.Suit);
+            return s;
+        }
+        public bool PlayerBidIsTrump()
+        {
+            bool s = (playerBid.Suit == trump.Suit);
+            return s;
+        }
+        public void AItakes()
+        {
+            AIplayer.AddRange(Swap);
+            Swap.Clear();
+        }
+        public void PlayerTakes()
+        {
+            Player.AddRange(Swap);
+            Swap.Clear();
+        }
+        public bool AIcardHigher()
+        {
+            bool c = ;
+            return c;
+        }
         //(un)comment to (see)hide display of hands and(or) deck. don't forget to insert/remove the methods' calls!
         public void ShowPlayerHand()
         {
