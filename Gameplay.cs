@@ -118,7 +118,7 @@ namespace Durak_Card_Game
         }
         public void DealHands()
         {
-            while (Player.Count < 6 && AIplayer.Count < 6 && ShuffledDeck.Count > 0)
+            while ((Player.Count < 6) && (AIplayer.Count < 6) && (ShuffledDeck.Count > 0))
             {
                 Player.Add(ShuffledDeck[0]);
                 ShuffledDeck.RemoveAt(0);
