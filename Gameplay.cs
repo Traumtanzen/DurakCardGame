@@ -21,8 +21,32 @@ namespace Durak_Card_Game
 
         public void Play()
         {
+            Console.WriteLine("Let's start the game!");
+            GetGameDeck();
+            Shuffle();
+            DealHands();
+            ShowTrump();
 
-            Console.WriteLine("\nLet's start the game. Checking for the lowest trump or value in hands...");
+            while ((Player.Count != 0) || (AIplayer.Count != 0))
+            {
+                TrumpCheckAndStart();
+            }
+            if (Player.Count == 0)
+            {
+                Console.WriteLine("\nYou won!");
+                AskForReplay();
+            }
+            else
+            {
+                Console.WriteLine("\nYou lost the game.");
+                AskForReplay();
+            }
+        }
+
+
+        public void TrumpCheckAndStart()
+        {
+            Console.WriteLine("\nChecking for the lowest trump or value in hands...");
             Thread.Sleep(500);
             var playerTrump = Player.OrderBy(o => o.Face).FirstOrDefault(s => s.Suit == trump.Suit);
             var aiTrump = AIplayer.OrderBy(o => o.Face).FirstOrDefault(s => s.Suit == trump.Suit);
@@ -48,21 +72,8 @@ namespace Durak_Card_Game
                     }
                 }
             }
-            //while ((Player.Count != 0) || (AIplayer.Count != 0))
-            //{
-
-            //}
-            if (Player.Count == 0)
-            {
-                Console.WriteLine("\nYou won!");
-                AskForReplay();
-            }
-            else
-            {
-                Console.WriteLine("\nYou lost the game.");
-                AskForReplay();
-            }
         }
+
 
         //Turns
         public void AIstarts()
@@ -87,6 +98,7 @@ namespace Durak_Card_Game
             AIdefence();
             AIdefenseResult();
         }
+
 
         //Actions
         public void GetGameDeck()
@@ -135,9 +147,9 @@ namespace Durak_Card_Game
         public void AIdefence()
         {
             Thread.Sleep(500);
-            aiBid = AIplayer.FirstOrDefault(c => (PlayerFaceLower() && SameSuit()) ||
-                                                 (AIFaceLower() && AIbidIsTrump()) ||
-                                                 (AIFaceLower() && DiffSuits()));
+            aiBid = AIplayer.FirstOrDefault(c => (c.Face > playerBid.Face && c.Suit == playerBid.Suit) ||
+                                        (c.Face < playerBid.Face && c.Suit == trump.Suit) ||
+                                        (c.Face < playerBid.Face && c.Suit != trump.Suit));
             Console.WriteLine($"\nAI bids a card: {aiBid.ShowCard()}");
             AIplayer.Remove(aiBid);
         }
@@ -179,10 +191,12 @@ namespace Durak_Card_Game
             if (PlayerCardHigher())
             {
                 Discard();
+                PlayerTurn();
             }
             else
             {
                 PlayerTakes();
+                AIturn();
             }
         }
         public void AIdefenseResult()
@@ -190,10 +204,12 @@ namespace Durak_Card_Game
             if (AIcardHigher())
             {
                 Discard();
+                AIturn();
             }
             else
             {
                 AItakes();
+                PlayerTurn();
             }
         }
         public void AskForReplay()
