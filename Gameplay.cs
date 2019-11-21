@@ -37,7 +37,7 @@ namespace Durak_Card_Game
         }
         public void AIturn()
         {
-            if ((Player.Count > 0) && (ShuffledDeck.Count == 0))
+            if ((Player.Count > 0) && (ShuffledDeck.Count > 0))
             {
                 AIbids();
                 PlayerBids();
@@ -55,7 +55,7 @@ namespace Durak_Card_Game
         }
         public void PlayerTurn()
         {
-            if ((AIplayer.Count > 0) && (ShuffledDeck.Count == 0))
+            if ((AIplayer.Count > 0) && (ShuffledDeck.Count > 0))
             {
                 PlayerBids();
                 AIdefence();
@@ -95,10 +95,10 @@ namespace Durak_Card_Game
         }
         public void DealHands()
         {
+            Console.WriteLine("Dealing hands");
+            Thread.Sleep(500);
             while ((Player.Count < 6) && (AIplayer.Count < 6) && (ShuffledDeck.Count > 0))
             {
-                Console.WriteLine("Dealing hands.");
-                Thread.Sleep(500);
                 Player.Add(ShuffledDeck[0]);
                 ShuffledDeck.RemoveAt(0);
                 AIplayer.Add(ShuffledDeck[0]);
@@ -159,7 +159,8 @@ namespace Durak_Card_Game
                                         (c.Face <= playerBid.Face && c.Suit == trump.Suit) ||
                                         (c.Face > playerBid.Face && c.Suit == trump.Suit) ||
                                         (c.Face < playerBid.Face && c.Suit != trump.Suit));
-            Console.WriteLine($"\nAI bids a card: {aiBid.ShowCard()}");
+            Console.WriteLine($"\nAI bids a card back: {aiBid.ShowCard()}");
+            Swap.Add(aiBid);
             AIplayer.Remove(aiBid);
         }
         public void PlayerBids()
@@ -286,12 +287,15 @@ namespace Durak_Card_Game
         }
         public bool AIcardHigher()
         {
-            bool c = (PlayerFaceLower() && SameSuit()) || (EqualFaces() && AIbidIsTrump());
+            bool c = (PlayerFaceLower() && SameSuit()) || 
+                (EqualFaces() && AIbidIsTrump()) || 
+                (AIFaceLower() && AIbidIsTrump());
             return c;
         }
         public bool PlayerCardHigher()
         {
-            bool c = (AIFaceLower() && SameSuit()) || (EqualFaces() || PlayerBidIsTrump());
+            bool c = (AIFaceLower() && SameSuit()) || 
+                (EqualFaces() && PlayerBidIsTrump());
             return c;
         }
 
