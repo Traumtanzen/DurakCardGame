@@ -21,29 +21,99 @@ namespace Durak_Card_Game
 
         public void Play()
         {
-            Console.WriteLine("Let's start the game!");
+            Console.WriteLine("This id Durak Card Game \"na minimalkah\" \nLet's start the game!");
             GetGameDeck();
             Shuffle();
             DealHands();
             ShowTrump();
+            TrumpCheckAndStart();
+        }
 
-            while ((Player.Count != 0) || (AIplayer.Count != 0))
+        //Turns
+        public void AIstarts()
+        {
+            Console.WriteLine("\nAI starts");
+            AIturn();
+        }
+        public void AIturn()
+        {
+            if ((Player.Count > 0) && (ShuffledDeck.Count == 0))
             {
-                TrumpCheckAndStart();
-            }
-            if (Player.Count == 0)
-            {
-                Console.WriteLine("\nYou won!");
-                AskForReplay();
+                AIbids();
+                PlayerBids();
+                PlayerBidsResult();
             }
             else
             {
-                Console.WriteLine("\nYou lost the game.");
-                AskForReplay();
+                Victory();
             }
         }
+        public void PlayerStarts()
+        {
+            Console.WriteLine("\nYou start");
+            PlayerTurn();
+        }
+        public void PlayerTurn()
+        {
+            if ((AIplayer.Count > 0) && (ShuffledDeck.Count == 0))
+            {
+                PlayerBids();
+                AIdefence();
+                AIdefenseResult();
+            }
+            else
+            {
+                Defeat();
+            }
+        }
+        public void Victory()
+        {
+            Console.WriteLine("\nYou won!");
+            AskForReplay();
+        }
+        public void Defeat()
+        {
+            Console.WriteLine("\nYou lost the game.");
+            AskForReplay();
+        }
 
-
+        //Actions
+        public void GetGameDeck()
+        {
+            GameDeck = new List<Card>();
+            foreach (Suits suit in Enum.GetValues(typeof(Suits)))
+            {
+                foreach (Faces face in Enum.GetValues(typeof(Faces)))
+                {
+                    GameDeck.Add(new Card { Suit = suit, Face = face });
+                }
+            }
+        }
+        public void Shuffle()
+        {
+            ShuffledDeck = GameDeck.OrderBy(c => Guid.NewGuid()).ToList();
+        }
+        public void DealHands()
+        {
+            while ((Player.Count < 6) && (AIplayer.Count < 6) && (ShuffledDeck.Count > 0))
+            {
+                Console.WriteLine("Dealing hands.");
+                Thread.Sleep(500);
+                Player.Add(ShuffledDeck[0]);
+                ShuffledDeck.RemoveAt(0);
+                AIplayer.Add(ShuffledDeck[0]);
+                ShuffledDeck.RemoveAt(0);
+            }
+        }
+        public void ShowTrump()
+        {
+            Swap.Add(ShuffledDeck[0]);
+            ShuffledDeck.RemoveAt(0);
+            ShuffledDeck.AddRange(Swap);
+            Swap.Clear();
+            trump = ShuffledDeck[ShuffledDeck.Count - 1];
+            Console.WriteLine($"\n{trump.Suit} are trumps for this game.");
+        }
         public void TrumpCheckAndStart()
         {
             Console.WriteLine("\nChecking for the lowest trump or value in hands...");
@@ -73,68 +143,6 @@ namespace Durak_Card_Game
                 }
             }
         }
-
-
-        //Turns
-        public void AIstarts()
-        {
-            Console.WriteLine("\nAI starts");
-            AIturn();
-        }
-        public void AIturn()
-        {
-            AIbids();
-            PlayerBids();
-            PlayerBidsResult();
-        }
-        public void PlayerStarts()
-        {
-            Console.WriteLine("\nYou start");
-            PlayerTurn();
-        }
-        public void PlayerTurn()
-        {
-            PlayerBids();
-            AIdefence();
-            AIdefenseResult();
-        }
-
-
-        //Actions
-        public void GetGameDeck()
-        {
-            GameDeck = new List<Card>();
-            foreach (Suits suit in Enum.GetValues(typeof(Suits)))
-            {
-                foreach (Faces face in Enum.GetValues(typeof(Faces)))
-                {
-                    GameDeck.Add(new Card { Suit = suit, Face = face });
-                }
-            }
-        }
-        public void Shuffle()
-        {
-            ShuffledDeck = GameDeck.OrderBy(c => Guid.NewGuid()).ToList();
-        }
-        public void DealHands()
-        {
-            while ((Player.Count < 6) && (AIplayer.Count < 6) && (ShuffledDeck.Count > 0))
-            {
-                Player.Add(ShuffledDeck[0]);
-                ShuffledDeck.RemoveAt(0);
-                AIplayer.Add(ShuffledDeck[0]);
-                ShuffledDeck.RemoveAt(0);
-            }
-        }
-        public void ShowTrump()
-        {
-            Swap.Add(ShuffledDeck[0]);
-            ShuffledDeck.RemoveAt(0);
-            ShuffledDeck.AddRange(Swap);
-            Swap.Clear();
-            trump = ShuffledDeck[ShuffledDeck.Count - 1];
-            Console.WriteLine($"\n{trump.Suit} are trumps for this game.");
-        }
         public void AIbids()
         {
             Thread.Sleep(500);
@@ -148,7 +156,8 @@ namespace Durak_Card_Game
         {
             Thread.Sleep(500);
             aiBid = AIplayer.FirstOrDefault(c => (c.Face > playerBid.Face && c.Suit == playerBid.Suit) ||
-                                        (c.Face < playerBid.Face && c.Suit == trump.Suit) ||
+                                        (c.Face <= playerBid.Face && c.Suit == trump.Suit) ||
+                                        (c.Face > playerBid.Face && c.Suit == trump.Suit) ||
                                         (c.Face < playerBid.Face && c.Suit != trump.Suit));
             Console.WriteLine($"\nAI bids a card: {aiBid.ShowCard()}");
             AIplayer.Remove(aiBid);
@@ -183,6 +192,7 @@ namespace Durak_Card_Game
         {
             Swap.Clear();
             Console.WriteLine("\nDiscarded");
+            Thread.Sleep(500);
             DealHands();
         }
 
