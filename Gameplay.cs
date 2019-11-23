@@ -95,15 +95,21 @@ namespace Durak_Card_Game
         }
         public void DealHands()
         {
-            Console.WriteLine("Dealing hands");
             Thread.Sleep(500);
-            while ((Player.Count < 6) && (AIplayer.Count < 6) && (ShuffledDeck.Count > 0))
+            if (ShuffledDeck.Count > 0)
             {
-                Player.Add(ShuffledDeck[0]);
-                ShuffledDeck.RemoveAt(0);
-                AIplayer.Add(ShuffledDeck[0]);
-                ShuffledDeck.RemoveAt(0);
+                while (Player.Count < 6)
+                {
+                    Player.Add(ShuffledDeck[0]);
+                    ShuffledDeck.RemoveAt(0);
+                }
+                while (AIplayer.Count < 6)
+                {
+                    AIplayer.Add(ShuffledDeck[0]);
+                    ShuffledDeck.RemoveAt(0);
+                }
             }
+            Console.WriteLine($"\nDealing hands. {ShuffledDeck.Count.ToString()} cards left in the deck");
         }
         public void ShowTrump()
         {
@@ -158,7 +164,7 @@ namespace Durak_Card_Game
             aiBid = AIplayer.FirstOrDefault(c => (c.Face > playerBid.Face && c.Suit == playerBid.Suit) ||
                                         (c.Face <= playerBid.Face && c.Suit == trump.Suit) ||
                                         (c.Face > playerBid.Face && c.Suit == trump.Suit) ||
-                                        (c.Face < playerBid.Face && c.Suit != trump.Suit));
+                                        (c.Face <= playerBid.Face && c.Suit != trump.Suit));
             Console.WriteLine($"\nAI bids a card back: {aiBid.ShowCard()}");
             Swap.Add(aiBid);
             AIplayer.Remove(aiBid);
@@ -167,7 +173,7 @@ namespace Durak_Card_Game
         {
             Console.WriteLine($"\nBid a card. Choose by index and press <Enter> ({trump.Suit} are trumps)");
             ShowPlayerHand();
-            int.TryParse(Console.ReadLine(), out int PlChoice);
+            int.TryParse(Console.ReadLine(), out int PlChoice); //not good if enter not numbers & more than hand has
             playerBid = Player.ElementAt(PlChoice);
             Swap.Add(playerBid);
             Console.WriteLine($"\nYour card is {playerBid.ShowCard()}");
@@ -287,15 +293,18 @@ namespace Durak_Card_Game
         }
         public bool AIcardHigher()
         {
-            bool c = (PlayerFaceLower() && SameSuit()) || 
-                (EqualFaces() && AIbidIsTrump()) || 
+            bool c = (PlayerFaceLower() && SameSuit()) ||
+                (PlayerFaceLower() && AIbidIsTrump()) ||
+                (EqualFaces() && AIbidIsTrump()) ||
                 (AIFaceLower() && AIbidIsTrump());
             return c;
         }
         public bool PlayerCardHigher()
         {
-            bool c = (AIFaceLower() && SameSuit()) || 
-                (EqualFaces() && PlayerBidIsTrump());
+            bool c = (AIFaceLower() && SameSuit()) ||
+                (AIFaceLower() && PlayerBidIsTrump()) ||
+                (EqualFaces() && PlayerBidIsTrump()) ||
+                (PlayerFaceLower() && PlayerBidIsTrump());
             return c;
         }
 
