@@ -198,7 +198,7 @@ namespace Durak_Card_Game
         public void Discard()
         {
             Swap.Clear();
-            Console.WriteLine("\nDiscarded");
+            Console.WriteLine("\n---Discarded---");
             Thread.Sleep(500);
             DealHands();
         }
