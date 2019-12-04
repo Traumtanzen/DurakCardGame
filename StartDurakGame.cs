@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Durak_Card_Game
 {
-    class Program
+    class StartDurakGame
     {
-        static void Main(string[] args)
+        public bool PlayDurak()
         {
-            StartDurakGame game = new StartDurakGame();
-            game.PlayDurak();
-            Console.ReadLine();
+            DurakGameplay game = new DurakGameplay();
+            game.Play();
+            return DurakGameplay.GameResult;
         }
     }
 }

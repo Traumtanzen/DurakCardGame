@@ -7,21 +7,22 @@ using System.Threading.Tasks;
 
 namespace Durak_Card_Game
 {
-    public class Gameplay
+    public class DurakGameplay
     {
-        public List<Card> GameDeck { get; set; }
-        public List<Card> ShuffledDeck { get; set; }
-        public List<Card> Player = new List<Card>();
-        public List<Card> AIplayer = new List<Card>();
-        public List<Card> Swap = new List<Card>();
-        public Card trump = new Card();
-        public Card aiBid = new Card();
-        public Card playerBid = new Card();
+        public List<DurakCard> GameDeck { get; set; }
+        public List<DurakCard> ShuffledDeck { get; set; }
+        public static List<DurakCard> Player = new List<DurakCard>();
+        public List<DurakCard> AIplayer = new List<DurakCard>();
+        public List<DurakCard> Swap = new List<DurakCard>();
+        public DurakCard trump = new DurakCard();
+        public DurakCard aiBid = new DurakCard();
+        public DurakCard playerBid = new DurakCard();
+        public static bool GameResult;
 
 
         public void Play()
         {
-            Console.WriteLine("This id Durak Card Game \"na minimalkah\" \nLet's start the game!");
+            Console.WriteLine("To beat the monster you should win a party in Durak game. Let's start!");
             GetGameDeck();
             Shuffle();
             DealHands();
@@ -66,26 +67,28 @@ namespace Durak_Card_Game
                 Defeat();
             }
         }
-        public void Victory()
+        public bool Victory()
         {
             Console.WriteLine("\nYou won!");
-            AskForReplay();
+            //AskForReplay();
+            return GameResult = true;
         }
-        public void Defeat()
+        public bool Defeat()
         {
             Console.WriteLine("\nYou lost the game.");
-            AskForReplay();
+            //AskForReplay();
+            return GameResult = false;
         }
 
         //Actions
         public void GetGameDeck()
         {
-            GameDeck = new List<Card>();
+            GameDeck = new List<DurakCard>();
             foreach (Suits suit in Enum.GetValues(typeof(Suits)))
             {
                 foreach (Faces face in Enum.GetValues(typeof(Faces)))
                 {
-                    GameDeck.Add(new Card { Suit = suit, Face = face });
+                    GameDeck.Add(new DurakCard { Suit = suit, Face = face });
                 }
             }
         }
@@ -173,11 +176,23 @@ namespace Durak_Card_Game
         {
             Console.WriteLine($"\nBid a card. Choose by index and press <Enter> ({trump.Suit} are trumps)");
             ShowPlayerHand();
+            MakingBid();
+        }
+        public void MakingBid()
+        {
             int.TryParse(Console.ReadLine(), out int PlChoice); //not good if enter not numbers & more than hand has
-            playerBid = Player.ElementAt(PlChoice);
-            Swap.Add(playerBid);
-            Console.WriteLine($"\nYour card is {playerBid.ShowCard()}");
-            Player.RemoveAt(PlChoice);
+            if ((PlChoice <= Player.Count) && (PlChoice > 0))
+            {
+                playerBid = Player.ElementAt(PlChoice);
+                Swap.Add(playerBid);
+                Console.WriteLine($"\nYour card is {playerBid.ShowCard()}");
+                Player.RemoveAt(PlChoice);
+            }
+            else
+            {
+                Console.WriteLine("You should chose a card from hand by its number");
+                MakingBid();
+            }
         }
         public void AItakes()
         {
@@ -312,7 +327,7 @@ namespace Durak_Card_Game
         public void ShowPlayerHand()
         {
             Console.WriteLine("\nYour hand is:\n");
-            foreach (Card pCards in Player)
+            foreach (DurakCard pCards in Player)
             {
                 Console.WriteLine($"{Player.IndexOf(pCards)} - {pCards.ShowCard()}");
             }
@@ -320,7 +335,7 @@ namespace Durak_Card_Game
         public void ShowAIplayerHand()
         {
             Console.WriteLine("\nAI's hand is:\n");
-            foreach (Card aiCards in AIplayer)
+            foreach (DurakCard aiCards in AIplayer)
             {
                 Console.WriteLine($"{AIplayer.IndexOf(aiCards)} - {aiCards.ShowCard()}");
             }
@@ -328,7 +343,7 @@ namespace Durak_Card_Game
         public void ShowShuffledDeck()
         {
             Console.WriteLine("\nShuffled deck is:\n");
-            foreach (Card card in ShuffledDeck)
+            foreach (DurakCard card in ShuffledDeck)
             {
                 Console.WriteLine($"{ShuffledDeck.IndexOf(card)} -  {card.ShowCard()}");
             }

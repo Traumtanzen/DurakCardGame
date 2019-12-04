@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Durak_Card_Game
 {
-    public class Card
+    public class DurakCard
     {
         public Suits Suit { get; set; }
         public Faces Face { get; set; }
